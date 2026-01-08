@@ -1,6 +1,7 @@
 beautifulsoup4==4.14.3
 certifi==2026.1.4
 charset-normalizer==3.4.4
+deep-translator==1.11.4
 dotenv==0.9.9
 idna==3.11
 python-dotenv==1.2.1
