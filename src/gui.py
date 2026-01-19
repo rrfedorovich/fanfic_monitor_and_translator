@@ -19,7 +19,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, QThread, Signal
 
-from main import ENV, main
+from console import ENV, main
 
 
 class LogWindow(QMainWindow):
