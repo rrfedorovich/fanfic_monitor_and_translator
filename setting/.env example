@@ -1,0 +1,5 @@
+API_ID='цифры id'
+API_HASH='цифры hash'
+PHONE='+72345678911'
+FANFICS_CSV_PATH='./setting/fanfics.csv'
+FANFICS_OUT_DIR='./fanfics'
