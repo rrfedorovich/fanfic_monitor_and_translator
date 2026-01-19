@@ -91,7 +91,7 @@ class MainWindow(QMainWindow):
         main_layout.addWidget(tabs)
 
         # Кнопка запуска функции (вне вкладок)
-        self.run_button = QPushButton("Запустить функцию")
+        self.run_button = QPushButton("Запустить перевод")
         self.run_button.setFixedHeight(35)
         self.run_button.clicked.connect(self.run_function)  # Привязываем обработчик
         # Добавляем на раскладку кнопку.
@@ -115,7 +115,7 @@ class MainWindow(QMainWindow):
         # Таблица для редактирования CSV
         csv_table = QTableWidget(0, 3)
         csv_table.setHorizontalHeaderLabels(
-            ["Название", "Адрес ссылки", "Номер последней главы"]
+            ["Название", "Адрес фанфика", "Номер последней главы"]
         )
         csv_table.setColumnWidth(0, 280)
         csv_table.setColumnWidth(1, 500)
