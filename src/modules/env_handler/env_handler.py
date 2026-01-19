@@ -67,20 +67,24 @@ class EnvHandler(BaseEnvHandler):
     fanfics_out_dir = EnvItem(
         "FANFICS_OUT_DIR", "", "Путь до папки, куда сохранять фанфики"
     )
+    telegram_on = EnvItem(
+        "TELEGRAM_ON", "", "Включена ли отправка в телеграм: 1 - да, 0 - нет."
+    )
+    items = [
+        api_id,
+        api_hash,
+        phone,
+        fanfics_csv_path,
+        fanfics_out_dir,
+        telegram_on
+    ]
 
     def load_env(self) -> bool:
         """Загружает переменные из .env в os.environ. Возвращает True, если файл .env корректен."""
         super().load_env()
-        items = [
-            self.api_id,
-            self.api_hash,
-            self.phone,
-            self.fanfics_csv_path,
-            self.fanfics_out_dir,
-        ]
-        for item in items:
+        for item in self.items:
             item.value = self.get_item(item.name)
-        if not all([i.value for i in items]):
+        if not all([i.value for i in self.items]):
             logging.info("Не заполнены все значения ENV.")
             return False
         return True
@@ -93,10 +97,4 @@ class EnvHandler(BaseEnvHandler):
 
     def get_items(self) -> List[EnvItem]:
         """Возвращает список всех элементов."""
-        return [
-            self.api_id,
-            self.api_hash,
-            self.phone,
-            self.fanfics_csv_path,
-            self.fanfics_out_dir,
-        ]
+        return self.items

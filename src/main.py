@@ -62,11 +62,12 @@ def main():
                     logging.info(f"> Файл записан.")
                     logging.info(f">> {file_path}")
                     
-                    asyncio.run(
-                        telegram_exporter.send_file_to_telegram(
-                            [str(file_path.absolute())], ff.name
+                    if ENV.telegram_on.value == '1':
+                        asyncio.run(
+                            telegram_exporter.send_file_to_telegram(
+                                [str(file_path.absolute())], ff.name
+                            )
                         )
-                    )
 
                     updated_rows_for_csv[index_ff] = ff.get_data_for_csv()
                     csv_base.write_csv(updated_rows_for_csv)
