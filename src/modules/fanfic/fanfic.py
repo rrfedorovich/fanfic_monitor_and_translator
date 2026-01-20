@@ -107,7 +107,6 @@ class SpaceBattles(GetData, BaseSite):
 
         while finish_page is None or page <= finish_page:
             response = self.get_data(self.fic_url + f"reader/page-{page}")
-            
             html = BeautifulSoup(response.content, "html.parser")
             if finish_page is None:
                 pages_block = html.select_one(".pageNav-main li:last-child a")
@@ -136,6 +135,12 @@ class SpaceBattles(GetData, BaseSite):
         return chapters
 
 
+class SufficientVelocity(SpaceBattles):
+    """Класс для получения фанфиков из SufficientVelocity."""
+
+    pass
+
+
 class FanficFactory:
     """Фабрика для генерации экземляров подходящих под URL классов-обработчиков сайтов."""
 
@@ -150,4 +155,6 @@ class FanficFactory:
         """
         if "spacebattles" in url:
             return SpaceBattles(name, url, last_chapter)
+        elif "sufficientvelocity" in url:
+            return SufficientVelocity(name, url, last_chapter)
         return None
