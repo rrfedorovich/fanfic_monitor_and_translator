@@ -71,12 +71,12 @@ class EnvHandler(BaseEnvHandler):
         "TELEGRAM_ON", "", "Включена ли отправка в телеграм: 1 - да, 0 - нет."
     )
     items = [
+        telegram_on,
         api_id,
         api_hash,
         phone,
         fanfics_csv_path,
-        fanfics_out_dir,
-        telegram_on
+        fanfics_out_dir
     ]
 
     def load_env(self) -> bool:
