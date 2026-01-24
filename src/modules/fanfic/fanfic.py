@@ -1,5 +1,6 @@
 import abc
 import logging
+import re
 import time
 from typing import List
 
@@ -173,6 +174,70 @@ class SufficientVelocity(SpaceBattles):
     pass
 
 
+class ArchiveOfOurOwn(GetData, BaseSite):
+    """Класс для получения фанфиков с ArchiveOfOurOwn."""
+
+    def __init__(self, name: str, url: str, last_chapter: str) -> None:
+        """
+        name: Название фанфика для пользователя.
+        url: Адрес фанфика.
+        last_chapter: Номер последней главы.
+        """
+        super().__init__(name, url, last_chapter)
+        self.fic_url: str = self.handle_url(url)
+
+    def clean_text(self, text: str):
+        """Очистка текста."""
+        return text.replace("\xa0", "").strip()
+
+    def chapter_to_text(self, chapter_block):
+        """Преобразование главы в обработанный текст."""
+        # замена br на \n
+        for br in chapter_block.find_all("br"):
+            br.replace_with("\n")
+        text = "\n".join(
+            [self.clean_text(p.get_text()) for p in chapter_block.find_all("p")]
+        )
+        # замена множественных (от 3) \n на двойной (\n\n)
+        return re.sub(r"\n{3,}", "\n\n", text)
+
+    def handle_url(self, url: str):
+        """Получение URL адреса всей работы."""
+        url = url.split("?", 1)[0]
+        return "/".join(url.split("/")[:5]) + "?view_full_work=true"
+
+    def get_chapters_startwith(self, start_chapter: int) -> List[Chapter]:
+        """
+        Получает главы с указанной через чтение всей работы.
+        Нумерация глав начинается с 1.
+        """
+        super().get_chapters_startwith(start_chapter)
+        chapters = []
+
+        response = self.get_data(self.fic_url)
+        if response:
+            html = BeautifulSoup(response.content, "html.parser")
+            title_tags = html.select(".chapter .title")[start_chapter - 1 :]
+            chapter_titles = [self.clean_text(tag.get_text()) for tag in title_tags]
+            text_tags = html.select(".chapter .userstuff.module")
+            chapter_texts = [
+                self.chapter_to_text(chapter)
+                for chapter in text_tags[start_chapter - 1 :]
+            ]
+            for id in range(len(chapter_texts)):
+                chapters.append(
+                    Chapter(
+                        chapter_titles[id],
+                        chapter_texts[id],
+                        start_chapter + id,
+                    )
+                )
+        else:
+            logging.error(">> Не смог загрузить фанфик.")
+
+        return chapters
+
+
 class FanficFactory:
     """Фабрика для генерации экземляров подходящих под URL классов-обработчиков сайтов."""
 
@@ -189,4 +254,6 @@ class FanficFactory:
             return SpaceBattles(name, url, last_chapter)
         elif "sufficientvelocity" in url:
             return SufficientVelocity(name, url, last_chapter)
+        elif "archiveofourown" in url:
+            return ArchiveOfOurOwn(name, url, last_chapter)
         return None

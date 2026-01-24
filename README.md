@@ -1,6 +1,6 @@
 # Fanfic monitor and translator
 
-**Fanfic monitor and translator** - программа на Python для отслеживания новых глав на SpaceBattles и SufficientVelocity (пока только на них), создания файла из переведенных и отправки его в Ваш телеграм в Избранное.
+**Fanfic monitor and translator** - программа на Python для отслеживания новых глав на SpaceBattles, SufficientVelocity и Archive of Our Own (пока только на них), создания файла из переведенных и отправки его в Ваш телеграм в Избранное.
 
 ---
 
