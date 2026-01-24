@@ -36,11 +36,12 @@ class GetData(abc.ABC):
                     break
                 except Exception as e:
                     k -= 1
+                    logging.error(f'>> {e}')
                     if k > 0:
-                        logging.error(e)
-                        time.sleep(20)
+                        time.sleep(10)
                     else:
-                        raise e
+                        logging.error('')
+                        return None
             return response
 
         return wrap
@@ -107,31 +108,35 @@ class SpaceBattles(GetData, BaseSite):
 
         while finish_page is None or page <= finish_page:
             response = self.get_data(self.fic_url + f"reader/page-{page}")
-            html = BeautifulSoup(response.content, "html.parser")
-            if finish_page is None:
-                pages_block = html.select_one(".pageNav-main li:last-child a")
-                if pages_block is not None:
-                    finish_page = int(pages_block.get_text())
-                    if page > finish_page:
+            if response:
+                html = BeautifulSoup(response.content, "html.parser")
+                if finish_page is None:
+                    pages_block = html.select_one(".pageNav-main li:last-child a")
+                    if pages_block is not None:
+                        finish_page = int(pages_block.get_text())
+                        if page > finish_page:
+                            break
+                    else:
+                        logging.error(">> Не смог определить номер последней страницы.")
                         break
-                else:
-                    logging.error(">> Не смог определить номер последней страницы.")
-                    break
-            page += 1
-            articles = html.select("article.js-post")
-            for chapter in articles[start_chapter:]:
-                logging.info(f">> Получение главы {chapter_id}")
-                title_block = chapter.select_one("span span")
-                text_block = chapter.select_one(".message-content.js-messageContent")
-                if title_block is not None and text_block is not None:
-                    title = title_block.get_text()
-                    text = text_block.get_text()
-                    chapters.append(Chapter(title, text, chapter_id))
-                    chapter_id += 1
-                else:
-                    logging.error(">>> Не смог определить содержимое главы.")
-                    break
-            start_chapter = 0
+                page += 1
+                articles = html.select("article.js-post")
+                for chapter in articles[start_chapter:]:
+                    logging.info(f">> Получение главы {chapter_id}")
+                    title_block = chapter.select_one("span span")
+                    text_block = chapter.select_one(".message-content.js-messageContent")
+                    if title_block is not None and text_block is not None:
+                        title = title_block.get_text()
+                        text = text_block.get_text()
+                        chapters.append(Chapter(title, text, chapter_id))
+                        chapter_id += 1
+                    else:
+                        logging.error(">>> Не смог определить содержимое главы.")
+                        break
+                start_chapter = 0
+            else:
+                logging.error(">> Не смог загрузить фанфик.")
+                break
         return chapters
 
 
